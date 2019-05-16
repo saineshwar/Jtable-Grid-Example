@@ -1,0 +1,143 @@
+﻿
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Index</title>
+
+    <!--Adding Theme for jTable Grid-->
+    <!--You can choose any type of theme from the themes folder-->
+    <link href="~/Content/bootstrap.css" rel="stylesheet" />
+    <link href="~/Scripts/jtable/themes/metro/green/jtable.min.css" rel="stylesheet" />
+    <link href="~/jquery-ui-1.12.1.custom/jquery-ui-1.12.1.custom/jquery-ui.min.css" rel="stylesheet" />
+    <!--Adding jquery Plugin-->
+    <script src="~/Scripts/jquery-1.10.2.js"></script>
+    <script src="~/Scripts/jquery-ui-1.9.2.min.js"></script>
+    <!--Adding jTable Plugin-->
+    <script src="~/Scripts/jtable/jquery.jtable.min.js"></script>
+
+    <!-- Import CSS file for validation engine (in Head section of HTML) -->
+    <link href="~/Scripts/validationEngine/validationEngine.jquery.css" rel="stylesheet" type="text/css" />
+
+    <!-- Import Javascript files for validation engine (in Head section of HTML) -->
+    <script type="text/javascript" src="~/Scripts/validationEngine/jquery.validationEngine.js"></script>
+    <script type="text/javascript" src="~/Scripts/validationEngine/jquery.validationEngine-en.js"></script>
+    <style>
+        div.content-container div.padded-content-container {
+            padding: 6px;
+        }
+
+        div.filtering {
+            border: 1px solid #999;
+            margin-bottom: 5px;
+            padding: 10px;
+            background-color: #EEE;
+        }
+    </style>
+
+    <script>
+        $(document).ready(function () {
+            $('#CustomerTableContainer').jtable({
+                title: 'Customers',
+                paging: true,
+                pageSize: 5,
+                sorting: true,
+                actions:
+                {
+                    listAction: '/Demo/GetCustomers',
+                    createAction: '/Demo/CreateCustomer',
+                    updateAction: '/Demo/EditCustomer',
+                    deleteAction: '/Demo/DeleteCustomer'
+                },
+                fields: {
+                    CustomerID: {
+                        key: true,
+                        list: false
+                    },
+                    CompanyName: {
+                        title: 'Company Name',
+                        width: '25%'
+                    },
+                    ContactName: {
+                        title: 'ContactName',
+                        width: '20%'
+                    },
+                    ContactTitle: {
+                        title: 'ContactTitle',
+                        width: '20%'
+                    },
+                    City: {
+                        title: 'City',
+                        width: '10%'
+                    },
+                    PostalCode: {
+                        title: 'PostalCode',
+                        width: '10%'
+                    },
+                    Country: {
+                        title: 'Country',
+                        width: '20%'
+                    },
+                    Phone: {
+                        title: 'Phone',
+                        width: '20%'
+                    }
+                },
+                //Initialize validation logic when a form is created
+                formCreated: function (event, data) {
+                    data.form.find('input[name="CompanyName"]').addClass('validate[required]');
+                    data.form.find('input[name="ContactName"]').addClass('validate[required]');
+                    data.form.find('input[name="ContactTitle"]').addClass('validate[required]');
+                    data.form.find('input[name="City"]').addClass('validate[required]');
+                    data.form.find('input[name="PostalCode"]').addClass('validate[required]');
+                    data.form.find('input[name="Country"]').addClass('validate[required]');
+                    data.form.find('input[name="Phone"]').addClass('validate[required]');
+                    data.form.validationEngine();
+                },
+                //Validate form when it is being submitted
+                formSubmitting: function (event, data) {
+                    return data.form.validationEngine('validate');
+                },
+                //Dispose validation logic when form is closed
+                formClosed: function (event, data) {
+                    data.form.validationEngine('hide');
+                    data.form.validationEngine('detach');
+                }
+            });
+
+            //Re-load records when user click 'load records' button.
+            $('#BtnSearch').click(function (e) {
+                e.preventDefault();
+                $('#CustomerTableContainer').jtable('load', {
+                    companyname: $('#companyname').val()
+                });
+            });
+
+            //Load Customer data from server
+            $('#CustomerTableContainer').jtable('load');
+        });
+
+    </script>
+
+</head>
+<body>
+    <div class="container">
+        <div class="filtering">
+            <form>
+                Company name: <input type="text" name="companyname" id="companyname" />
+                <button type="submit" id="BtnSearch">Search</button>
+            </form>
+        </div>
+
+        <div class="col-md-12">
+            <div id="CustomerTableContainer"></div>
+        </div>
+    </div>
+
+</body>
+</html>
